@@ -1,0 +1,24 @@
+.tickets {
+  gap: 0.5rem;
+}
+
+.leftPanel {
+  display: flex;
+  flex-direction: row;
+  min-width: 80%;
+}
+.rightPanel {
+  flex: 1;
+  min-width: 0;
+}
+
+.layout {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  min-height: 100% !important;
+  width: 100%;
+}
+.maxHeight {
+  height: 77.5vh;
+}
