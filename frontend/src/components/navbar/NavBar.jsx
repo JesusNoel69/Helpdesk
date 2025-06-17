@@ -1,10 +1,14 @@
-function NavBar() {
+import styles from "./NavBar.module.css";
+import logo from "./../../assets/image.png";
+function NavBar(Props) {
+  const { children } = Props;
   return (
     <>
-      <div>
-        <img src="..." alt="..."></img>
-        <button>Login</button>
+      <div className={styles.padded}>
+        <img src={logo} className={styles.logo} alt="..."></img>
+        <div className={styles.container}>{children}</div>
       </div>
+      <div className={styles.division}></div>
     </>
   );
 }

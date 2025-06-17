@@ -7,8 +7,21 @@
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
+  --color: rgba(255, 255, 255, 0.87);
+  --button-background: #1e90ff;
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  padding: 0.5rem;
 }

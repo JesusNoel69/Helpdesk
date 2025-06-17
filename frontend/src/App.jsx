@@ -1,11 +1,14 @@
 import "./App.css";
-import Principal from "./components/principal/principal";
+import Principal from "./components/principal/Principal";
 import NavBar from "./components/navbar/NavBar";
+import ButtonLogin from "./components/button-login/ButtonLogin";
 
 function App() {
   return (
     <>
-      <NavBar></NavBar>
+      <NavBar>
+        <ButtonLogin>Login</ButtonLogin>
+      </NavBar>
       <Principal></Principal>
     </>
   );
