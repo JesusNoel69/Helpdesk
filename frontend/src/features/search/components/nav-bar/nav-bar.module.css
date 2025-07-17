@@ -1,0 +1,51 @@
+.image {
+  border-radius: 100%;
+  width: 4rem;
+  height: 4rem;
+  object-fit: contain;
+  position: absolute;
+}
+.container {
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  /* justify-content: center; */
+  /* border: solid 1px red; */
+  position: relative;
+  height: calc(5rem + 2px);
+}
+.bar {
+  border-radius: 5px;
+  border: white solid 1px;
+  height: 3rem;
+  width: calc(100% - 2.5rem);
+  display: flex;
+  margin-left: auto; /*alinear a la derecha*/
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1rem;
+}
+
+.login {
+  width: 5rem;
+  height: fit-content;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-bottom: 0.1rem;
+  padding-top: 0.1rem;
+  background: lightblue;
+  border: lightblue;
+  border-radius: 3px;
+}
+.login:hover {
+  cursor: pointer;
+}
+
+.svg {
+  height: 1.5rem;
+  width: 1.5rem;
+}

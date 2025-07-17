@@ -1,0 +1,44 @@
+.container {
+  /* border: solid 1px red; */
+  /* height: calc(100vh - 1rem) !important; el rem del padding del html */
+  width: 100% !important;
+  /* overflow-y: scroll; */
+  /* scrollbar-width: thin;
+  scrollbar-color: white #242424 !important; */
+  display: flex;
+  gap: 1rem;
+}
+
+.title {
+  width: 70%;
+  border: solid 2px white;
+  justify-self: center;
+  text-align: center;
+  border-radius: 5px;
+  position: static;
+  font-weight: bolder;
+  /* background: #242424; */
+}
+
+.positionTitle {
+  float: inherit;
+}
+
+.showButton,
+.addButton {
+  width: calc(100% - 1rem);
+  height: 2rem;
+  display: flex;
+  justify-self: center;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 5px;
+  border: white;
+  font-weight: bolder;
+  cursor: pointer;
+}
+.showButton:hover,
+.addButton:hover {
+  cursor: pointer;
+}

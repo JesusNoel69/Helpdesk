@@ -1,8 +1,0 @@
-.container {
-  background: lightgreen;
-  width: 3rem;
-  height: calc(1.5rem + 7px);
-  border-radius: 0.2rem;
-  border: solid 2px white;
-  text-align: center;
-}

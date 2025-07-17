@@ -1,0 +1,25 @@
+.container {
+  width: 100% !important;
+  background: transparent;
+  overflow: visible;
+  border: solid 1px white;
+  border-radius: 5px;
+  position: relative;
+  padding-top: 2rem;
+  padding-bottom: 3px;
+}
+
+.sticky {
+  position: relative;
+  top: -3.1rem; /* sube el título 2rem */
+  z-index: 10;
+}
+
+.scrollArea {
+  height: calc(100% + 1.75rem);
+  overflow-y: auto;
+  margin-top: -3.5rem;
+  scrollbar-width: thin;
+  padding-top: 1rem;
+  scrollbar-color: white #242424 !important;
+}

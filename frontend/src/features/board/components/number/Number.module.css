@@ -1,0 +1,7 @@
+.tag {
+  width: 2.5rem;
+  height: 1.5rem;
+  text-align: center;
+  border-radius: 5px;
+  border: solid 2px white;
+}

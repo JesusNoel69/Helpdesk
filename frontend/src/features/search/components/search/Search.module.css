@@ -1,0 +1,28 @@
+.button {
+  width: 2rem;
+  height: calc(2rem - 1px);
+  background: white !important;
+  /* padding: 0.5rem; */
+  border: 0;
+  border-radius: 0.3rem 0 0 0.3rem;
+}
+section {
+  /* border: solid 1px red; */
+  padding: 0;
+  margin: 0;
+  display: flex;
+  width: 100%; /*solo se extiende lo necesario por el section padre*/
+  max-width: 600px;
+  justify-self: center;
+}
+
+.input {
+  height: calc(2rem - 1px);
+  border: none;
+  width: 100%;
+  border-radius: 0 0 0 0;
+}
+
+.buttonSearch {
+  border-radius: 0 0.3rem 0.3rem 0;
+}

@@ -1,0 +1,25 @@
+.comment {
+  width: calc(100% - 2rem);
+  height: 100%;
+  overflow-y: hidden;
+  border: solid 1px white;
+  padding: 2px;
+  border-radius: 5px;
+}
+
+.scroller {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: white #242424;
+}
+
+.divider {
+  width: 90%;
+  height: 1px;
+  justify-self: center;
+  background-color: white;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
