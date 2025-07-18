@@ -7,20 +7,25 @@ export default function Card({ style }) {
     <>
       <div style={style} className={styles.container}>
         <Column>
-          <Title className title="To Do" count="2" color="red"></Title>
+          <Title className title="Open" count="2" color="red"></Title>
           <ShowMore></ShowMore>
           <AddButton></AddButton>
         </Column>
         <Column>
-          <Title title="Blocked" count="2" color="red"></Title>
+          <Title title="In Progress" count="2" color="#4682B4"></Title>
           <ShowMore></ShowMore>
         </Column>
         <Column>
-          <Title className title="In process" count="2" color="red"></Title>
+          <Title
+            className
+            title="Blocked"
+            count="2"
+            color="yellowgreen"
+          ></Title>
           <ShowMore></ShowMore>
         </Column>
         <Column>
-          <Title className title="Terminated" count="2" color="red"></Title>
+          <Title className title="Closed" count="2" color="green"></Title>
           <ShowMore></ShowMore>
         </Column>
         <Panel></Panel>
