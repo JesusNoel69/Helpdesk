@@ -1,4 +1,4 @@
-// src/shared/validators/colorValidator.js
+// src/shared/validators/colorValidator.mjs
 
 const cssColorNames = new Set([
   "red",
