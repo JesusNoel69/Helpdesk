@@ -1,7 +1,8 @@
+// Role.mjs
 import { ValueObject } from "./valueObject.mjs";
 
 export default class Role extends ValueObject {
-  constructor(id, nameRole) {
+  constructor({ id, nameRole }) {
     if (!Role.isValidRole(nameRole)) {
       throw new Error(`Invalid Role ${nameRole}`);
     }
@@ -11,6 +12,6 @@ export default class Role extends ValueObject {
   }
 
   static isValidRole(nameRole) {
-    return typeof nameRole === "string";
+    return typeof nameRole === "string" && nameRole.length > 0;
   }
 }

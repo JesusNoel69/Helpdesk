@@ -1,4 +1,4 @@
-// src/domain/value-objects/ValueObject.mjs
+// src/domain/value-objects/valueObject.mjs
 
 export class ValueObject {
   constructor(value) {

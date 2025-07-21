@@ -1,4 +1,4 @@
-export class TicketRepositoy {
+export default class TicketRepositoy {
   async findAll() {
     throw new Error("findAll not implemented yet");
   }

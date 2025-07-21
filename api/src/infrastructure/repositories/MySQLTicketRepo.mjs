@@ -1,8 +1,8 @@
 // src/infrastructure/persistence/MySqlTicketRepo.mjs
-import { TicketRepository } from "../../application/ports/ticketRepository.mjs";
-import { pool } from "../config/db.mjs";
-import { StateType } from "../../domain/value-objects/state.mjs";
-import { Priority } from "../../domain/value-objects/priority.mjs";
+import TicketRepository from "../../application/ports/ticketRepository.mjs";
+import pool from "../config/db.mjs";
+import StateType from "../../domain/value-objects/state.mjs";
+import Priority from "../../domain/value-objects/priority.mjs";
 import { Ticket } from "../../domain/entities/ticket.mjs";
 
 export class MySqlTicketRepo extends TicketRepository {

@@ -1,7 +1,7 @@
 import { TicketDTO } from "../dtos/ticketDTO.mjs";
 
 // list all tickets
-export async function listTickets(_, { ticketRepo }) {
+export default async function listTickets(_, { ticketRepo }) {
   //call the port
   const tickets = await ticketRepo.findAll();
 

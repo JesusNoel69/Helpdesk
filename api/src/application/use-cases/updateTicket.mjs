@@ -3,7 +3,7 @@ import StateType from "../../domain/value-objects/state.mjs";
 import { TicketDTO } from "../dtos/ticketDTO.mjs";
 
 //create ticket
-export async function createTicket(input, { id }, { ticketRepo }) {
+export default async function createTicket(input, { id }, { ticketRepo }) {
   //build object
   /*input should be contains:  
     closedAt,
