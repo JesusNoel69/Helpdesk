@@ -1,7 +1,7 @@
 // Role.mjs
 import { ValueObject } from "./valueObject.mjs";
 
-export default class Role extends ValueObject {
+export class Role extends ValueObject {
   constructor({ id, nameRole }) {
     if (!Role.isValidRole(nameRole)) {
       throw new Error(`Invalid Role ${nameRole}`);

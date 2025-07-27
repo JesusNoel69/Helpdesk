@@ -27,3 +27,8 @@ export function json(res, statusCode, data) {
   });
   res.end(payload);
 }
+
+export function toMySQLDateTime(ms) {
+  const date = new Date(ms);
+  return date.toISOString().slice(0, 19).replace("T", " ");
+}

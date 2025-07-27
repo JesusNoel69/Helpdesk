@@ -4,8 +4,8 @@ export class Ticket {
   constructor({
     id,
     responsibleId,
-    stateId,
-    priorityId,
+    state, // VO StateType
+    priority, // VO Priority
     createdAt,
     updatedAt,
     title,
@@ -16,8 +16,8 @@ export class Ticket {
   }) {
     this.id = id;
     this.responsibleId = responsibleId;
-    this.stateId = stateId;
-    this.priorityId = priorityId;
+    this.state = state;
+    this.priority = priority;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.title = title;

@@ -16,6 +16,7 @@ const cssColorNames = new Set([
   "navy",
   "aqua",
   "fuchsia",
+  "bluelight",
   "maroon",
   "olive",
   "silver",

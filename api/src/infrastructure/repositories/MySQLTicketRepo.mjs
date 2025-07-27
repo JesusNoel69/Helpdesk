@@ -4,7 +4,7 @@ import pool from "../config/db.mjs";
 import StateType from "../../domain/value-objects/state.mjs";
 import Priority from "../../domain/value-objects/priority.mjs";
 import { Ticket } from "../../domain/entities/ticket.mjs";
-
+import { toMySQLDateTime } from "../helpers/helpers.mjs";
 export class MySqlTicketRepo extends TicketRepository {
   async findAll() {
     const [rows] = await pool.query(`
@@ -21,7 +21,7 @@ export class MySqlTicketRepo extends TicketRepository {
         t.ClosedAt,
         t.Details,
         st.NameColor    AS stateColor,
-        pr.NamePriority AS priorityName
+        pr.NamePriority AS namePriority
       FROM Ticket t
       JOIN StateType st ON t.StateId    = st.Id
       JOIN Priority  pr ON t.PriorityId = pr.Id
@@ -35,7 +35,7 @@ export class MySqlTicketRepo extends TicketRepository {
           state: new StateType({ id: row.StateId, nameColor: row.stateColor }),
           priority: new Priority({
             id: row.PriorityId,
-            namePriority: row.priorityName,
+            namePriority: row.namePriority,
           }),
           createdAt: row.CreatedAt,
           updatedAt: row.UpdatedAt,
@@ -49,9 +49,7 @@ export class MySqlTicketRepo extends TicketRepository {
   }
 
   async findById(id) {
-    //query returns [rows, fields]
-    const [rows] = await pool.query(
-      `
+    const sql = `
       SELECT
         t.Id            AS ticketId,
         t.ResponsibleId,
@@ -65,15 +63,17 @@ export class MySqlTicketRepo extends TicketRepository {
         t.ClosedAt,
         t.Details,
         st.NameColor    AS stateColor,
-        pr.NamePriority AS priorityName
+        pr.NamePriority AS namePriority
       FROM Ticket t
       JOIN StateType st ON t.StateId    = st.Id
       JOIN Priority  pr ON t.PriorityId = pr.Id
       WHERE t.Id = ?
       LIMIT 1
-    `,
-      [id]
-    );
+    `;
+    const params = [id.id];
+
+    //query returns [rows, fields]
+    const [rows] = await pool.query(sql, params);
 
     if (rows.length === 0) return null;
     const row = rows[0];
@@ -83,7 +83,7 @@ export class MySqlTicketRepo extends TicketRepository {
       state: new StateType({ id: row.StateId, nameColor: row.stateColor }),
       priority: new Priority({
         id: row.PriorityId,
-        namePriority: row.priorityName,
+        namePriority: row.namePriority,
       }),
       createdAt: row.CreatedAt,
       updatedAt: row.UpdatedAt,
@@ -98,22 +98,23 @@ export class MySqlTicketRepo extends TicketRepository {
   async delete(id) {
     const [result] = await pool.query(
       `
-      DELETE FROM Ticket
-      WHERE Id = ?
+      DELETE FROM Ticket t
+      WHERE t.Id = ?
       LIMIT 1
     `,
-      [id]
+      [id.id]
     );
     // result.affectedRows return how much lines were delete
     return result.affectedRows;
   }
-
   async save(ticket) {
+    console.log("t t ticket ", ticket);
+
     const {
       id,
       responsibleId,
-      state: { id: stateId },
-      priority: { id: priorityId },
+      state,
+      priority,
       createdAt,
       updatedAt,
       title,
@@ -123,68 +124,78 @@ export class MySqlTicketRepo extends TicketRepository {
       details,
     } = ticket;
 
-    // Upsert: insert or update
-    //uses  ON DUPLICATE KEY UPDATE if id isnt exist update values
+    const stateId = state?.id ?? null;
+    const priorityId = priority?.id ?? null;
 
-    await pool.execute(
+    const now = new Date();
+    const created = createdAt ?? now;
+    const updated = updatedAt ?? now;
+    const insertId = id ?? null;
+
+    const [result] = await pool.execute(
       `
-      INSERT INTO Ticket
-        (Id, ResponsibleId, StateId, PriorityId, CreatedAt, UpdatedAt, Title, TimeStart, PromiseEnd, ClosedAt, Details)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-        ResponsibleId = VALUES(ResponsibleId),
-        StateId       = VALUES(StateId),
-        PriorityId    = VALUES(PriorityId),
-        UpdatedAt     = VALUES(UpdatedAt),
-        Title         = VALUES(Title),
-        TimeStart     = VALUES(TimeStart),
-        PromiseEnd    = VALUES(PromiseEnd),
-        ClosedAt      = VALUES(ClosedAt),
-        Details       = VALUES(Details)
+    INSERT INTO Ticket
+      (Id, ResponsibleId, StateId, PriorityId, CreatedAt, UpdatedAt, Title, TimeStart, PromiseEnd, ClosedAt, Details)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      ResponsibleId = VALUES(ResponsibleId),
+      StateId       = VALUES(StateId),
+      PriorityId    = VALUES(PriorityId),
+      UpdatedAt     = VALUES(UpdatedAt),
+      Title         = VALUES(Title),
+      TimeStart     = VALUES(TimeStart),
+      PromiseEnd    = VALUES(PromiseEnd),
+      ClosedAt      = VALUES(ClosedAt),
+      Details       = VALUES(Details)
     `,
       [
-        id,
+        insertId,
         responsibleId,
         stateId,
         priorityId,
-        createdAt,
-        updatedAt,
+        toMySQLDateTime(created),
+        toMySQLDateTime(updated),
         title,
-        timeStart,
-        promiseEnd,
-        closedAt,
+        toMySQLDateTime(timeStart),
+        promiseEnd ? toMySQLDateTime(promiseEnd) : null,
+        closedAt ? toMySQLDateTime(closedAt) : null,
         details,
       ]
     );
 
-    // get row updated or created
+    const usedId = id ?? result?.insertId;
+
+    if (!usedId) {
+      throw new Error("Not found Id after upsert");
+    }
+
     const [rows] = await pool.query(
       `
-      SELECT
-        t.Id            AS ticketId,
-        t.ResponsibleId,
-        t.StateId,
-        t.PriorityId,
-        t.CreatedAt,
-        t.UpdatedAt,
-        t.Title,
-        t.TimeStart,
-        t.PromiseEnd,
-        t.ClosedAt,
-        t.Details,
-        st.NameColor    AS stateColor,
-        pr.NamePriority AS priorityName
-      FROM Ticket t
-      JOIN StateType st ON t.StateId    = st.Id
-      JOIN Priority  pr ON t.PriorityId = pr.Id
-      WHERE t.Id = ?
-      LIMIT 1
+    SELECT
+      t.Id            AS ticketId,
+      t.ResponsibleId,
+      t.StateId,
+      t.PriorityId,
+      t.CreatedAt,
+      t.UpdatedAt,
+      t.Title,
+      t.TimeStart,
+      t.PromiseEnd,
+      t.ClosedAt,
+      t.Details,
+      st.NameColor    AS stateColor,
+      pr.NamePriority AS namePriority
+    FROM Ticket t
+    JOIN StateType st ON t.StateId = st.Id
+    JOIN Priority  pr ON t.PriorityId = pr.Id
+    WHERE t.Id = ?
+    LIMIT 1
     `,
-      [id]
+      [usedId]
     );
 
     if (rows.length === 0) {
-      throw new Error(`Ticket with id=${id} not found after upsert`);
+      throw new Error(`Ticket with id=${usedId} not found after upsert`);
     }
 
     const row = rows[0];
@@ -194,7 +205,7 @@ export class MySqlTicketRepo extends TicketRepository {
       state: new StateType({ id: row.StateId, nameColor: row.stateColor }),
       priority: new Priority({
         id: row.PriorityId,
-        namePriority: row.priorityName,
+        namePriority: row.namePriority,
       }),
       createdAt: row.CreatedAt,
       updatedAt: row.UpdatedAt,

@@ -3,6 +3,7 @@ import { UserRepository } from "../../application/ports/userRepository.mjs";
 import { pool } from "../config/db.mjs";
 import { User } from "../../domain/entities/user.mjs";
 import { Role } from "../../domain/value-objects/role.mjs";
+import Email from "../../domain/value-objects/email.mjs";
 
 export class MySqlUserRepo extends UserRepository {
   async findAll() {
@@ -72,8 +73,8 @@ export class MySqlUserRepo extends UserRepository {
   async delete(id) {
     const [result] = await pool.query(
       `
-      DELETE FROM User
-      WHERE Id = ?
+      DELETE FROM User u
+      WHERE u.Id = ?
       LIMIT 1
     `,
       [id]
@@ -84,7 +85,7 @@ export class MySqlUserRepo extends UserRepository {
   async save(user) {
     const {
       id,
-      role: { id: roleUserId },
+      roleUserId,
       createdAt,
       updatedAt,
       nameUser,
@@ -92,45 +93,55 @@ export class MySqlUserRepo extends UserRepository {
       account,
     } = user;
 
-    // Upsert in User table
+    const email = account instanceof Email ? account.email : account;
+
     await pool.execute(
       `
-      INSERT INTO User
-        (Id, RoleUserId, NameUser, PasswordUser, Account, CreatedAt, UpdatedAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-        RoleUserId   = VALUES(RoleUserId),
-        NameUser     = VALUES(NameUser),
-        PasswordUser = VALUES(PasswordUser),
-        Account      = VALUES(Account),
-        UpdatedAt    = VALUES(UpdatedAt)
-    `,
-      [id, roleUserId, nameUser, passwordUser, account, createdAt, updatedAt]
+    INSERT INTO User
+      (Id, RoleUserId, NameUser, PasswordUser, Account, CreatedAt, UpdatedAt)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      RoleUserId   = VALUES(RoleUserId),
+      NameUser     = VALUES(NameUser),
+      PasswordUser = VALUES(PasswordUser),
+      Account      = VALUES(Account),
+      UpdatedAt    = VALUES(UpdatedAt)
+  `,
+      [
+        id ?? null,
+        roleUserId ?? null,
+        nameUser ?? null,
+        passwordUser ?? null,
+        email ?? null,
+        createdAt ?? null,
+        updatedAt ?? null,
+      ]
     );
 
-    // Get row updated or created
     const [rows] = await pool.query(
       `
-      SELECT
-        u.Id            AS userId,
-        u.RoleUserId,
-        u.NameUser,
-        u.PasswordUser,
-        u.Account,
-        ru.NameRole     AS roleName,
-        u.CreatedAt,
-        u.UpdatedAt
-      FROM User u
-      JOIN RoleUser ru ON u.RoleUserId = ru.Id
-      WHERE u.Id = ?
-      LIMIT 1
-    `,
-      [id]
+    SELECT
+      u.Id            AS userId,
+      u.RoleUserId,
+      u.NameUser,
+      u.PasswordUser,
+      u.Account,
+      ru.NameRole     AS roleName,
+      u.CreatedAt,
+      u.UpdatedAt
+    FROM User u
+    JOIN RoleUser ru ON u.RoleUserId = ru.Id
+    WHERE u.NameUser = ?
+    ORDER BY u.Id DESC
+    LIMIT 1
+  `,
+      [nameUser]
     );
 
     if (rows.length === 0) {
-      throw new Error(`User with id=${id} not found after upsert`);
+      throw new Error(`User not found after upsert`);
     }
+
     const row = rows[0];
     return new User({
       id: row.userId,

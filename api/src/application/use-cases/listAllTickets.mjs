@@ -8,18 +8,15 @@ export default async function listTickets(_, { ticketRepo }) {
   //map ticket in dto
   return tickets.map(
     (ticket) =>
-      new TicketDTO(
-        ticket
-        // {
-        // id: ticket.id,
-        // title: ticket.title,
-        // responsibleId: ticket.responsibleId,
-        // state: { id: ticket.state.id, color: ticket.state.value },
-        // priority: { level: ticket.priority.value },
-        // timeStart: ticket.timeStart,
-        // details: ticket.details,
-        // closedAt: ticket.closedAt,
-        // }
-      )
+      new TicketDTO({
+        id: ticket.id,
+        title: ticket.title,
+        responsibleId: ticket.responsibleId,
+        state: { id: ticket.state.id, color: ticket.state.value },
+        priority: { level: ticket.priority.value },
+        timeStart: ticket.timeStart,
+        details: ticket.details,
+        closedAt: ticket.closedAt,
+      })
   );
 }

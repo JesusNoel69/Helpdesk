@@ -2,7 +2,7 @@
 import { CommentRepository } from "../../application/ports/commentRepository.mjs";
 import { pool } from "../config/db.mjs";
 import { Comment } from "../../domain/entities/comment.mjs";
-
+import { toMySQLDateTime } from "../helpers/helpers.mjs";
 export class MySqlCommentRepo extends CommentRepository {
   async findAll() {
     const [rows] = await pool.query(`
@@ -51,7 +51,7 @@ export class MySqlCommentRepo extends CommentRepository {
       WHERE c.Id = ?
       LIMIT 1
     `,
-      [id]
+      [id.id]
     );
 
     if (rows.length === 0) return null;
@@ -70,21 +70,21 @@ export class MySqlCommentRepo extends CommentRepository {
     // Return afected rows by delete
     const [result] = await pool.query(
       `
-      DELETE FROM Comment
-      WHERE Id = ?
+      DELETE FROM Comment c
+      WHERE c.Id = ?
       LIMIT 1
     `,
-      [id]
+      [id.id]
     );
     return result.affectedRows;
   }
 
   async save(comment) {
-    //destructuring comment
     const { id, userId, ticketId, createdAt, updatedAt, valueComment } =
       comment;
 
-    // Upsert
+    const insertId = id && id > 0 ? id : null;
+
     await pool.execute(
       `
       INSERT INTO Comment
@@ -95,33 +95,35 @@ export class MySqlCommentRepo extends CommentRepository {
         TicketId     = VALUES(TicketId),
         UpdatedAt    = VALUES(UpdatedAt),
         ValueComment = VALUES(ValueComment)
-    `,
-      [id, userId, ticketId, createdAt, updatedAt, valueComment]
+      `,
+      [
+        insertId,
+        userId,
+        ticketId,
+        toMySQLDateTime(createdAt),
+        toMySQLDateTime(updatedAt),
+        valueComment,
+      ]
     );
 
-    // Get row updated
     const [rows] = await pool.query(
       `
-      SELECT
-        c.Id             AS commentId,
-        c.UserId,
-        c.TicketId,
-        c.CreatedAt,
-        c.UpdatedAt,
-        c.ValueComment
-      FROM Comment c
-      WHERE c.Id = ?
+      SELECT *
+      FROM Comment
+      WHERE UserId = ? AND TicketId = ?
+      ORDER BY CreatedAt DESC
       LIMIT 1
-    `,
-      [id]
+      `,
+      [userId, ticketId]
     );
 
     if (rows.length === 0) {
-      throw new Error(`Comment with id=${id} not found after upsert`);
+      return null;
     }
+
     const row = rows[0];
     return new Comment({
-      id: row.commentId,
+      id: row.Id,
       userId: row.UserId,
       ticketId: row.TicketId,
       createdAt: row.CreatedAt,

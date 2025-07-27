@@ -7,18 +7,20 @@ export class User {
     id,
     roleUserId,
     createdAt,
+    role,
     updatedAt,
     nameUser,
     passwordUser,
-    Account,
+    account,
   }) {
     this.id = id;
     this.roleUserId = roleUserId;
+    this.role = role;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.nameUser = nameUser;
     this.passwordUser = passwordUser;
-    this.Account = new Email(Account);
+    this.account = new Email({ email: account });
   }
 
   //uses test to handle null value

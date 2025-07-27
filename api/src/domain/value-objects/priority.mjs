@@ -12,6 +12,7 @@ export default class Priority extends ValueObject {
   }
 
   static isValidPriority(namePriority) {
+    if (typeof namePriority !== "string") return false;
     const hasNumbers = /\d/.test(namePriority);
     return !hasNumbers && namePriority.length > 0 && namePriority.length <= 50;
   }

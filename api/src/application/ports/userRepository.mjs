@@ -1,4 +1,4 @@
-export class UserRepositoy {
+export class UserRepository {
   async findAll() {
     throw new Error("findAll not implemented yet");
   }
